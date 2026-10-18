@@ -17,6 +17,10 @@ gradle jar
 
 Le jar est produit dans `build/libs/bm-bigtrade.jar`. Dépendances : `api-core` et `api-simplified` (dépôt `https://maven.bookmap.com/maven2/releases/`), en `compileOnly`. Si ta version de Bookmap est plus récente que `7.1.0.35`, monte la version dans `build.gradle`.
 
+### Build sur GitHub (sans rien installer)
+
+À chaque push sur `main`, GitHub Actions compile le jar : onglet **Actions** → dernier run → artefact `bm-bigtrade`. Pour publier une version : `git tag v0.1.0 && git push origin v0.1.0`, le jar est alors attaché à la page **Releases**.
+
 ## Installation
 
 Bookmap → *Settings → Api plugins configuration* → *Add…* → choisir `bm-bigtrade.jar` → cocher **Big Trade**. Deux indicateurs apparaissent (« Big Trade - achats » et « Big Trade - ventes »), activables séparément.
