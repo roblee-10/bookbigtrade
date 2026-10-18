@@ -35,6 +35,7 @@ Bookmap → *Settings → Api plugins configuration* → *Add…* → choisir `b
 | Utiliser les flags début/fin d'exécution | oui | Décocher si les bulles sont trop petites ou trop nombreuses (voir ci-dessous). |
 | Rayon mini / maxi (px) | 8 / 40 | Taille des bulles. |
 | Afficher la taille dans la bulle | oui | Étiquette visible si le rayon est ≥ 11 px. |
+| Epaisseur du contour noir (px) | 3 | Détache les bulles des points de volume natifs de Bookmap. 0 = off. |
 | Couleurs | vert / rouge | Acheteur / vendeur agressif. |
 
 ## Calibrage / dépannage

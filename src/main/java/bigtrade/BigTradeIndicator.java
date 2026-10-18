@@ -68,6 +68,9 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
     @Parameter(name = "Afficher la taille dans la bulle")
     private Boolean showLabel = true;
 
+    @Parameter(name = "Epaisseur du contour noir (px, 0 = off)", minimum = 0, maximum = 8, step = 1)
+    private Integer outlineWidth = 3;
+
     @Parameter(name = "Couleur acheteur agressif")
     private Color buyColor = new Color(0, 200, 90);
 
@@ -220,7 +223,9 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
         double ratio = Math.sqrt(size / Math.max(1.0, threshold));
         int radius = (int) Math.round(Math.min(rMax, Math.max(rMin, rMin * ratio)));
 
-        int dim = radius * 2 + 4;
+        int ow = Math.max(0, outlineWidth);
+        int pad = 2 + ow;
+        int dim = radius * 2 + 2 * pad;
         BufferedImage img = new BufferedImage(dim, dim, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         try {
@@ -229,10 +234,19 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
 
             Color base = buyAggressor ? buyColor : sellColor;
             g.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 150));
-            g.fillOval(2, 2, radius * 2, radius * 2);
+            g.fillOval(pad, pad, radius * 2, radius * 2);
             g.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 255));
             g.setStroke(new BasicStroke(1.5f));
-            g.drawOval(2, 2, radius * 2, radius * 2);
+            g.drawOval(pad, pad, radius * 2, radius * 2);
+
+            if (ow > 0) {
+                // Contour noir à l'extérieur du cercle coloré : détache la bulle des points natifs de Bookmap.
+                g.setColor(Color.BLACK);
+                g.setStroke(new BasicStroke((float) ow));
+                double half = ow / 2.0;
+                g.draw(new java.awt.geom.Ellipse2D.Double(pad - half, pad - half,
+                        radius * 2 + ow, radius * 2 + ow));
+            }
 
             if (showLabel && radius >= 11) {
                 String text = formatSize(size);
