@@ -1,0 +1,26 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.bookmap.com/maven2/releases/"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    // Fournies par Bookmap à l'exécution : compileOnly uniquement.
+    // Si Bookmap est plus récent, monter la version (x.y.z.b = version de Bookmap + build).
+    compileOnly group: 'com.bookmap.api', name: 'api-core', version: '7.1.0.35'
+    compileOnly group: 'com.bookmap.api', name: 'api-simplified', version: '7.1.0.35'
+}
+
+jar {
+    archiveFileName = 'bm-bigtrade.jar'
+}
