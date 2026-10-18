@@ -68,6 +68,9 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
     @Parameter(name = "Afficher la taille dans la bulle")
     private Boolean showLabel = true;
 
+    @Parameter(name = "Taille du texte (px)", minimum = 6, maximum = 48, step = 1)
+    private Integer textSize = 14;
+
     @Parameter(name = "Epaisseur du contour noir (px, 0 = off)", minimum = 0, maximum = 8, step = 1)
     private Integer outlineWidth = 3;
 
@@ -223,6 +226,13 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
         double ratio = Math.sqrt(size / Math.max(1.0, threshold));
         int radius = (int) Math.round(Math.min(rMax, Math.max(rMin, rMin * ratio)));
 
+        // Texte : la taille est choisie par l'utilisateur, et la bulle grandit si nécessaire pour le contenir.
+        String text = formatSize(size);
+        Font font = new Font(Font.SANS_SERIF, Font.BOLD, Math.max(6, textSize));
+        if (showLabel) {
+            radius = Math.max(radius, radiusToFit(text, font));
+        }
+
         int ow = Math.max(0, outlineWidth);
         int pad = 2 + ow;
         int dim = radius * 2 + 2 * pad;
@@ -248,19 +258,17 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
                         radius * 2 + ow, radius * 2 + ow));
             }
 
-            if (showLabel && radius >= 11) {
-                String text = formatSize(size);
-                int fontSize = Math.min(16, Math.max(9, radius * 2 / 3));
-                Font font = new Font(Font.SANS_SERIF, Font.BOLD, fontSize);
+            if (showLabel) {
                 g.setFont(font);
                 FontMetrics fm = g.getFontMetrics();
-                while (fm.stringWidth(text) > radius * 2 - 2 && fontSize > 7) {
-                    fontSize--;
-                    g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
-                    fm = g.getFontMetrics();
-                }
                 int x = (dim - fm.stringWidth(text)) / 2;
                 int y = (dim - fm.getHeight()) / 2 + fm.getAscent();
+                // Léger halo noir pour la lisibilité sur n'importe quel fond.
+                g.setColor(Color.BLACK);
+                g.drawString(text, x - 1, y);
+                g.drawString(text, x + 1, y);
+                g.drawString(text, x, y - 1);
+                g.drawString(text, x, y + 1);
                 g.setColor(Color.WHITE);
                 g.drawString(text, x, y);
             }
@@ -268,6 +276,21 @@ public class BigTradeIndicator implements CustomModule, TradeDataListener, TimeL
             g.dispose();
         }
         return img;
+    }
+
+    /** Rayon minimal pour que le texte tienne dans le cercle (mesuré sur une image jetable). */
+    private static int radiusToFit(String text, Font font) {
+        BufferedImage scratch = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = scratch.createGraphics();
+        try {
+            g.setFont(font);
+            FontMetrics fm = g.getFontMetrics();
+            double halfW = fm.stringWidth(text) / 2.0;
+            double halfH = fm.getAscent() / 2.0;
+            return (int) Math.ceil(Math.sqrt(halfW * halfW + halfH * halfH)) + 2;
+        } finally {
+            g.dispose();
+        }
     }
 
     static String formatSize(long size) {

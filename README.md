@@ -34,7 +34,8 @@ Bookmap → *Settings → Api plugins configuration* → *Add…* → choisir `b
 | Fenêtre de regroupement (ms) | 50 | Écart max entre deux trades du même côté pour les fusionner. |
 | Utiliser les flags début/fin d'exécution | oui | Décocher si les bulles sont trop petites ou trop nombreuses (voir ci-dessous). |
 | Rayon mini / maxi (px) | 8 / 40 | Taille des bulles. |
-| Afficher la taille dans la bulle | oui | Étiquette visible si le rayon est ≥ 11 px. |
+| Afficher la taille dans la bulle | oui | Étiquette sur toutes les bulles, avec léger halo noir. |
+| Taille du texte (px) | 14 | La bulle grandit si besoin pour contenir le texte (le rayon maxi peut donc être dépassé). |
 | Epaisseur du contour noir (px) | 3 | Détache les bulles des points de volume natifs de Bookmap. 0 = off. |
 | Couleurs | vert / rouge | Acheteur / vendeur agressif. |
 
